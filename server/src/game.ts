@@ -11,24 +11,24 @@ type Game = {
 }
 
 // copied from internet. Alter the array
-const shuffle = (array: Card[]) => {
-  for (let i = array.length - 1; i > 0; i--) {
+const shuffle = (deck: Card[]) => {
+  for (let i = deck.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
-    [array[i], array[j]] = [array[j], array[i]];
+    [deck[i], deck[j]] = [deck[j], deck[i]];
   }
-  return array;
+  return deck;
 }
 
-const rotateTopBottom = (array: Card[]) => {
-  for (let i = array.length - 1; i > 0; i--) {
+const rotateTopBottom = (deck: Card[]) => {
+  for (let i = 0; i < deck.length; i++) {
     const randomBool = Math.random() > 0.5 ? true : false;
     if (randomBool) {
-      const originalTop = array[i].top;
-      const originalBottom = array[i].bottom;
-      array[i] = { top: originalBottom, bottom: originalTop }
+      const originalTop = deck[i].top;
+      const originalBottom = deck[i].bottom;
+      deck[i] = { top: originalBottom, bottom: originalTop }
     }
   }
-  return array;
+  return deck;
 }
 
 export function newGame(): Game {
