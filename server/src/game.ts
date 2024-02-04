@@ -25,20 +25,29 @@ const shuffle = (deck: Card[]) => {
   return deck;
 }
 
-const rotateTopBottom = (deck: Card[]) => {
+const flipCard = (card: Card): Card => {
+  return {
+    top: card.bottom,
+    bottom: card.top
+  }
+}
+
+const shuffleTopBottom = (deck: Card[]) => {
   for (let i = 0; i < deck.length; i++) {
     const randomBool = Math.random() > 0.5 ? true : false;
     if (randomBool) {
-      const originalTop = deck[i].top;
-      const originalBottom = deck[i].bottom;
-      deck[i] = { top: originalBottom, bottom: originalTop }
+      deck[i] = flipCard(deck[i])
     }
   }
   return deck;
 }
 
+export const flipHand = (hand: Card[]): Card[] => {
+  return hand.map((card) => flipCard(card));
+}
+
 export function newGame(): Game {
-  const shuffledDeck = rotateTopBottom(shuffle(deck));
+  const shuffledDeck = shuffleTopBottom(shuffle(deck));
 
   let hand1 = shuffledDeck.slice(0, (0+11));
   let hand2 = shuffledDeck.slice(11, (11+11));

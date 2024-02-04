@@ -1,4 +1,4 @@
-import { newGame } from "../../src/game";
+import { flipHand, newGame } from "../../src/game";
 
 describe('Game', () => {
   describe('two players game', () => {
@@ -18,6 +18,26 @@ describe('Game', () => {
       const game = newGame();
       expect(game.player1.scoutAndShowTokenCount).toBe(0);
       expect(game.player2.scoutAndShowTokenCount).toBe(0);
+    })
+  })
+
+  describe('game mechanics', () => {
+    const playerHand = [
+      { top: 5, bottom: 3 },
+      { top: 1, bottom: 2 },
+      { top: 4, bottom: 7 },
+      { top: 8, bottom: 6 },
+      { top: 9, bottom: 3 },
+    ]
+
+    it('flips player hand', () => {
+      expect(flipHand(playerHand)).toStrictEqual([
+        { top: 3, bottom: 5 },
+        { top: 2, bottom: 1 },
+        { top: 7, bottom: 4 },
+        { top: 6, bottom: 8 },
+        { top: 3, bottom: 9 },
+      ])
     })
   })
 })
