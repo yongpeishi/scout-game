@@ -5,9 +5,15 @@ type Card = {
   bottom: number;
 }
 
+type Player = {
+  hand: Array<Card>;
+  scoutTokenCount: number;
+  scoutAndShowTokenCount: number;
+}
+
 type Game = {
-  hand1: Array<Card>;
-  hand2: Array<Card>;
+  player1: Player;
+  player2: Player;
 }
 
 // copied from internet. Alter the array
@@ -38,7 +44,15 @@ export function newGame(): Game {
   let hand2 = shuffledDeck.slice(11, (11+11));
 
   return {
-    hand1: hand1,
-    hand2: hand2
+    player1: {
+      hand: hand1,
+      scoutTokenCount: 3,
+      scoutAndShowTokenCount: 0
+    },
+    player2: {
+      hand: hand2,
+      scoutTokenCount: 3,
+      scoutAndShowTokenCount: 0
+    },
   }
 }
