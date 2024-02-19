@@ -14,6 +14,7 @@ type Player = {
 type Game = {
   player1: Player;
   player2: Player;
+  currentShow: Card[];
 }
 
 // copied from internet. Alter the array
@@ -63,5 +64,27 @@ export function newGame(): Game {
       scoutTokenCount: 3,
       scoutAndShowTokenCount: 0
     },
+    currentShow: []
   }
+}
+
+//type PlayAction = //union type of valid action
+type Show = {
+  handPosition: number[];
+}
+/* type Scout = {
+  card: Card,
+  insertPosition: number
+} */
+
+export const playerTakeTurn = (gameState: Game, playerID: "player1"|"player2" , action: Show): Game => {
+  let newGameState = { ...gameState };
+  const targetPlayer = newGameState[playerID];
+
+  const removedCards = newGameState[playerID].hand.splice(action.handPosition[0], action.handPosition.length)
+  console.log(newGameState[playerID].hand)
+
+  newGameState.currentShow = removedCards;
+
+  return newGameState
 }
