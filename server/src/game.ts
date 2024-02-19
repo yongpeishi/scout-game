@@ -1,9 +1,5 @@
 import { deck } from "./deck";
-
-type Card = {
-  top: number;
-  bottom: number;
-}
+import { Card, makeCard } from "./types";
 
 type Player = {
   hand: Array<Card>;
@@ -27,10 +23,10 @@ const shuffle = (deck: Card[]) => {
 }
 
 const flipCard = (card: Card): Card => {
-  return {
-    top: card.bottom,
-    bottom: card.top
-  }
+  return makeCard({
+    top: card.get("bottom"),
+    bottom: card.get("top")
+  })
 }
 
 const shuffleTopBottom = (deck: Card[]) => {
@@ -82,7 +78,6 @@ export const playerTakeTurn = (gameState: Game, playerID: "player1"|"player2" , 
   const targetPlayer = newGameState[playerID];
 
   const removedCards = newGameState[playerID].hand.splice(action.handPosition[0], action.handPosition.length)
-  console.log(newGameState[playerID].hand)
 
   newGameState.currentShow = removedCards;
 
