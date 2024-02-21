@@ -1,6 +1,7 @@
+import { List } from "immutable";
 import { makeCard } from "./types";
 
-export const deck = [
+export const deck = List([
   makeCard({top: 1,bottom: 2}),
   makeCard({top: 1,bottom: 3}),
   makeCard({top: 1,bottom: 4}),
@@ -54,5 +55,5 @@ export const deck = [
   makeCard({top: 8,bottom: 10}),
 
 //  makeCard({top: 9,bottom: 10})
-];
+]);
  
