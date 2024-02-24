@@ -1,46 +1,54 @@
+import { Immutable, produce } from "immer";
 import { deck } from "./deck";
 
-type Card = {
-  top: number;
-  bottom: number;
-}
+type Card = Immutable<{
+  readonly top: number;
+  readonly bottom: number;
+}>
 
-type Player = {
-  hand: Array<Card>;
-  scoutTokenCount: number;
-  scoutAndShowTokenCount: number;
-}
+type Player = Immutable<{
+  readonly hand: Array<Card>;
+  readonly scoutTokenCount: number;
+  readonly scoutAndShowTokenCount: number;
+}>
 
-type Game = {
-  player1: Player;
-  player2: Player;
-  currentShow: Card[];
-}
+type Game = Immutable<{
+  readonly player1: Player;
+  readonly player2: Player;
+  readonly currentShow: Card[];
+}>
 
-// copied from internet. Alter the array
+// core logic from the internet. Adapted to immerjs
 const shuffle = (deck: Card[]) => {
-  for (let i = deck.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [deck[i], deck[j]] = [deck[j], deck[i]];
-  }
-  return deck;
+  const shuffledDeck = produce(deck, draftDeck=> {
+    for (let i = draftDeck.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [draftDeck[i], draftDeck[j]] = [draftDeck[j], draftDeck[i]];
+    }
+  })
+
+  return shuffledDeck;
 }
 
 const flipCard = (card: Card): Card => {
-  return {
-    top: card.bottom,
-    bottom: card.top
-  }
+  const flippedCard = produce(card, draft => {
+    draft.top = card.bottom;
+    draft.bottom = card.top;
+  })
+
+  return flippedCard;
 }
 
 const shuffleTopBottom = (deck: Card[]) => {
-  for (let i = 0; i < deck.length; i++) {
-    const randomBool = Math.random() > 0.5 ? true : false;
-    if (randomBool) {
-      deck[i] = flipCard(deck[i])
+  const shuffledDeck = produce(deck, draft => {
+    for (let i = 0; i < deck.length; i++) {
+      const randomBool = Math.random() > 0.5 ? true : false;
+      if (randomBool) {
+        draft[i] = flipCard(deck[i])
+      }
     }
-  }
-  return deck;
+  })
+  return shuffledDeck;
 }
 
 export const flipHand = (hand: Card[]): Card[] => {
@@ -78,13 +86,10 @@ type Show = {
 } */
 
 export const playerTakeTurn = (gameState: Game, playerID: "player1"|"player2" , action: Show): Game => {
-  let newGameState = { ...gameState };
-  const targetPlayer = newGameState[playerID];
+  const newGameState = produce(gameState, draft => {
+    const removedCards = draft[playerID].hand.splice(action.handPosition[0], action.handPosition.length)
+    draft.currentShow = removedCards;
+  })
 
-  const removedCards = newGameState[playerID].hand.splice(action.handPosition[0], action.handPosition.length)
-  console.log(newGameState[playerID].hand)
-
-  newGameState.currentShow = removedCards;
-
-  return newGameState
+  return newGameState;
 }
