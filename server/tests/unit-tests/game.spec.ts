@@ -1,6 +1,6 @@
 import { List } from "immutable";
 import { flipHand, newGame, playerTakeTurn } from "../../src/game";
-import { makeCard } from "../../src/types";
+import { createGame, createPlayer, makeCard } from "../../src/types";
 
 describe('Game', () => {
   describe('When two players', () => {
@@ -44,16 +44,16 @@ describe('Game', () => {
   })
 
   describe('when player put on a show', () => {
-    const player2 = {
+    const player2 = createPlayer({
       hand: List([
         makeCard({ top: 2, bottom: 3 })
       ]),
       scoutTokenCount: 0,
       scoutAndShowTokenCount: 0
-    }
+    })
 
-    const gameState = {
-      player1: {
+    const gameState = createGame({
+      player1: createPlayer({
         hand: List([
           makeCard({ top: 5, bottom: 3 }),
           makeCard({ top: 1, bottom: 2 }),
@@ -63,16 +63,13 @@ describe('Game', () => {
         ]),
         scoutTokenCount: 0,
         scoutAndShowTokenCount: 0
-      },
+      }),
       player2: player2,
       currentShow: List([])
-    }
+    })
 
     it('updates current show', () => {
-      console.log("**********")
-      console.log(gameState.player1.hand)
       const newGameState = playerTakeTurn(gameState, "player1", { cardIndexes: { startIndex: 3, endIndex: 3 } })
-      console.log(newGameState.player1.hand)
       expect(newGameState.currentShow).toEqual(
         List([
           makeCard({ top: 8, bottom: 6 })
@@ -81,10 +78,7 @@ describe('Game', () => {
     })
 
     it('updates the player hand', () => {
-      console.log("-----------")
-      console.log(gameState.player1.hand)
       const newGameState = playerTakeTurn(gameState, "player1", { cardIndexes: { startIndex: 3, endIndex: 3 } })
-      console.log(newGameState.player1.hand)
       expect(newGameState.player1.hand).toEqual(
         List([
           makeCard({ top: 5, bottom: 3 }),

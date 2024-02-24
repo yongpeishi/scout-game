@@ -1,20 +1,8 @@
 import { deck } from "./deck";
 import { List } from "immutable";
-import { Card, makeCard } from "./types";
+import { Card, Game, createGame, createPlayer, makeCard } from "./types";
 
-type Player = {
-  hand: List<Card>;
-  scoutTokenCount: number;
-  scoutAndShowTokenCount: number;
-}
-
-type Game = {
-  player1: Player;
-  player2: Player;
-  currentShow: List<Card>;
-}
-
-// copied from internet. Alter the array
+// copied from internet.
 const shuffle = (deck: List<Card>) => {
   var mutableDeck = deck.toArray()
   for (let i = mutableDeck.length - 1; i > 0; i--) {
@@ -52,19 +40,19 @@ export function newGame(): Game {
   let hand1 = shuffledDeck.slice(0, (0+11));
   let hand2 = shuffledDeck.slice(11, (11+11));
 
-  return {
-    player1: {
+  return createGame({
+    player1: createPlayer({
       hand: hand1,
       scoutTokenCount: 3,
       scoutAndShowTokenCount: 0
-    },
-    player2: {
+    }),
+    player2: createPlayer({
       hand: hand2,
       scoutTokenCount: 3,
       scoutAndShowTokenCount: 0
-    },
+    }),
     currentShow: List([])
-  }
+  })
 }
 
 //type PlayAction = //union type of valid action
@@ -87,9 +75,9 @@ export const playerTakeTurn = (gameState: Game, playerID: "player1"|"player2" , 
   const cardsRemoved = targetPlayerOldHand.slice(startIndex, endIndex);
   const targetPlayerNewHand = targetPlayerOldHand.splice(startIndex, cardsRemoved.size);
 
-  let newGameState = { ...gameState };
-  newGameState.currentShow = cardsRemoved;
-  newGameState[playerID].hand = targetPlayerNewHand;
+  const newGameState = gameState
+    .set("currentShow", cardsRemoved)
+    .setIn([playerID, "hand"], targetPlayerNewHand)
 
   return newGameState
 }
