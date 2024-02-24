@@ -1,22 +1,6 @@
 import { Immutable, produce } from "immer";
 import { deck } from "./deck";
-
-type Card = Immutable<{
-  readonly top: number;
-  readonly bottom: number;
-}>
-
-type Player = Immutable<{
-  readonly hand: Array<Card>;
-  readonly scoutTokenCount: number;
-  readonly scoutAndShowTokenCount: number;
-}>
-
-type Game = Immutable<{
-  readonly player1: Player;
-  readonly player2: Player;
-  readonly currentShow: Card[];
-}>
+import { Card, Game } from "./types";
 
 // core logic from the internet. Adapted to immerjs
 const shuffle = (deck: Card[]) => {
