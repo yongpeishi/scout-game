@@ -1,33 +1,46 @@
 import { deck } from "./deck";
-import { List } from "immutable";
-import { Card, Game, createGame, createPlayer, makeCard } from "./types";
 
-// copied from internet.
-const shuffle = (deck: List<Card>) => {
-  var mutableDeck = deck.toArray()
-  for (let i = mutableDeck.length - 1; i > 0; i--) {
+type Card = {
+  top: number;
+  bottom: number;
+}
+
+type Player = {
+  hand: Array<Card>;
+  scoutTokenCount: number;
+  scoutAndShowTokenCount: number;
+}
+
+type Game = {
+  player1: Player;
+  player2: Player;
+  currentShow: Card[];
+}
+
+// copied from internet. Alter the array
+const shuffle = (deck: Card[]) => {
+  for (let i = deck.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
-    [mutableDeck[i], mutableDeck[j]] = [mutableDeck[j], mutableDeck[i]];
+    [deck[i], deck[j]] = [deck[j], deck[i]];
   }
-  return List(mutableDeck);
+  return deck;
 }
 
 const flipCard = (card: Card): Card => {
-  return makeCard({
-    top: card.get("bottom"),
-    bottom: card.get("top")
-  })
+  return {
+    top: card.bottom,
+    bottom: card.top
+  }
 }
 
-const shuffleTopBottom = (deck: List<Card>) => {
-  var mutableDeck = deck.toArray()
-  for (let i = 0; i < mutableDeck.length; i++) {
+const shuffleTopBottom = (deck: Card[]) => {
+  for (let i = 0; i < deck.length; i++) {
     const randomBool = Math.random() > 0.5 ? true : false;
     if (randomBool) {
-      mutableDeck[i] = flipCard(mutableDeck[i])
+      deck[i] = flipCard(deck[i])
     }
   }
-  return List(mutableDeck);
+  return deck;
 }
 
 export const flipHand = (hand: Card[]): Card[] => {
@@ -40,27 +53,24 @@ export function newGame(): Game {
   let hand1 = shuffledDeck.slice(0, (0+11));
   let hand2 = shuffledDeck.slice(11, (11+11));
 
-  return createGame({
-    player1: createPlayer({
+  return {
+    player1: {
       hand: hand1,
       scoutTokenCount: 3,
       scoutAndShowTokenCount: 0
-    }),
-    player2: createPlayer({
+    },
+    player2: {
       hand: hand2,
       scoutTokenCount: 3,
       scoutAndShowTokenCount: 0
-    }),
-    currentShow: List([])
-  })
+    },
+    currentShow: []
+  }
 }
 
 //type PlayAction = //union type of valid action
 type Show = {
-  cardIndexes: {
-    startIndex: number,
-    endIndex: number  //index of the last card shown, inclusive
-  }
+  handPosition: number[];
 }
 /* type Scout = {
   card: Card,
@@ -68,16 +78,13 @@ type Show = {
 } */
 
 export const playerTakeTurn = (gameState: Game, playerID: "player1"|"player2" , action: Show): Game => {
-  const startIndex = action.cardIndexes.startIndex;
-  const endIndex = action.cardIndexes.endIndex + 1;
+  let newGameState = { ...gameState };
+  const targetPlayer = newGameState[playerID];
 
-  const targetPlayerOldHand = gameState[playerID].hand;
-  const cardsRemoved = targetPlayerOldHand.slice(startIndex, endIndex);
-  const targetPlayerNewHand = targetPlayerOldHand.splice(startIndex, cardsRemoved.size);
+  const removedCards = newGameState[playerID].hand.splice(action.handPosition[0], action.handPosition.length)
+  console.log(newGameState[playerID].hand)
 
-  const newGameState = gameState
-    .set("currentShow", cardsRemoved)
-    .setIn([playerID, "hand"], targetPlayerNewHand)
+  newGameState.currentShow = removedCards;
 
   return newGameState
 }
