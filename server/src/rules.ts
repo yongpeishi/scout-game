@@ -1,6 +1,10 @@
 import { produce } from "immer";
 import { Card } from "./types"
 
+const isOneCard = (cards: Card[]): boolean => {
+  return cards.length === 1;
+}
+
 const isSet = (cards: Card[]): boolean => {
   const firstTopNumber = cards[0].top;
   const isSameTopNumber = (card: Card) => card.top === firstTopNumber;
@@ -13,7 +17,7 @@ const isAscending = (cards: Card[]): boolean => {
     return index === cards.length - 1 || card.top < cards[index + 1].top;
   }
 
-  return cards.every(isCurrentSmallerThanNext);
+  return cards.length > 1 && cards.every(isCurrentSmallerThanNext);
 }
 
 const isDescending = (cards: Card[]): boolean => {
@@ -25,5 +29,5 @@ export const isValidShow = (cards: Card[]):boolean => {
   const notEmpty = cards.length >= 1
 
   return notEmpty &&
-    (cards.length === 1 || isSet(cards) || isAscending(cards) || isDescending(cards))
+    (isOneCard(cards) || isSet(cards) || isAscending(cards) || isDescending(cards))
 }
