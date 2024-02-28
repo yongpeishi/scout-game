@@ -16,3 +16,7 @@ export type Game = Immutable<{
   readonly player2: Player;
   readonly currentShow: Card[];
 }>
+
+export type Show = {
+  handPosition: number[];
+}

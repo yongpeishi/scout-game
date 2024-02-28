@@ -1,6 +1,6 @@
 import { Immutable, produce } from "immer";
 import { deck } from "./deck";
-import { Card, Game } from "./types";
+import { Card, Game, Show } from "./types";
 
 // core logic from the internet. Adapted to immerjs
 const shuffle = (deck: Card[]) => {
@@ -61,9 +61,6 @@ export function newGame(): Game {
 }
 
 //type PlayAction = //union type of valid action
-type Show = {
-  handPosition: number[];
-}
 /* type Scout = {
   card: Card,
   insertPosition: number

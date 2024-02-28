@@ -65,7 +65,6 @@ describe('Game', () => {
       player2: player2,
       currentShow: []
     }
-    let newGameState;
 
     it('updates current show', () => {
       const newGameState = playerTakeTurn(gameState, "player1", { handPosition: [3] })
