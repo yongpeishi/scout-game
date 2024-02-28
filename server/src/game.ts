@@ -1,33 +1,38 @@
+import { Immutable, produce } from "immer";
 import { deck } from "./deck";
-import { List } from "immutable";
-import { Card, Game, createGame, createPlayer, makeCard } from "./types";
+import { Card, Game } from "./types";
 
-// copied from internet.
-const shuffle = (deck: List<Card>) => {
-  var mutableDeck = deck.toArray()
-  for (let i = mutableDeck.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [mutableDeck[i], mutableDeck[j]] = [mutableDeck[j], mutableDeck[i]];
-  }
-  return List(mutableDeck);
+// core logic from the internet. Adapted to immerjs
+const shuffle = (deck: Card[]) => {
+  const shuffledDeck = produce(deck, draftDeck=> {
+    for (let i = draftDeck.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [draftDeck[i], draftDeck[j]] = [draftDeck[j], draftDeck[i]];
+    }
+  })
+
+  return shuffledDeck;
 }
 
 const flipCard = (card: Card): Card => {
-  return makeCard({
-    top: card.get("bottom"),
-    bottom: card.get("top")
+  const flippedCard = produce(card, draft => {
+    draft.top = card.bottom;
+    draft.bottom = card.top;
   })
+
+  return flippedCard;
 }
 
-const shuffleTopBottom = (deck: List<Card>) => {
-  var mutableDeck = deck.toArray()
-  for (let i = 0; i < mutableDeck.length; i++) {
-    const randomBool = Math.random() > 0.5 ? true : false;
-    if (randomBool) {
-      mutableDeck[i] = flipCard(mutableDeck[i])
+const shuffleTopBottom = (deck: Card[]) => {
+  const shuffledDeck = produce(deck, draft => {
+    for (let i = 0; i < deck.length; i++) {
+      const randomBool = Math.random() > 0.5 ? true : false;
+      if (randomBool) {
+        draft[i] = flipCard(deck[i])
+      }
     }
-  }
-  return List(mutableDeck);
+  })
+  return shuffledDeck;
 }
 
 export const flipHand = (hand: Card[]): Card[] => {
@@ -40,27 +45,24 @@ export function newGame(): Game {
   let hand1 = shuffledDeck.slice(0, (0+11));
   let hand2 = shuffledDeck.slice(11, (11+11));
 
-  return createGame({
-    player1: createPlayer({
+  return {
+    player1: {
       hand: hand1,
       scoutTokenCount: 3,
       scoutAndShowTokenCount: 0
-    }),
-    player2: createPlayer({
+    },
+    player2: {
       hand: hand2,
       scoutTokenCount: 3,
       scoutAndShowTokenCount: 0
-    }),
-    currentShow: List([])
-  })
+    },
+    currentShow: []
+  }
 }
 
 //type PlayAction = //union type of valid action
 type Show = {
-  cardIndexes: {
-    startIndex: number,
-    endIndex: number  //index of the last card shown, inclusive
-  }
+  handPosition: number[];
 }
 /* type Scout = {
   card: Card,
@@ -68,16 +70,10 @@ type Show = {
 } */
 
 export const playerTakeTurn = (gameState: Game, playerID: "player1"|"player2" , action: Show): Game => {
-  const startIndex = action.cardIndexes.startIndex;
-  const endIndex = action.cardIndexes.endIndex + 1;
+  const newGameState = produce(gameState, draft => {
+    const removedCards = draft[playerID].hand.splice(action.handPosition[0], action.handPosition.length)
+    draft.currentShow = removedCards;
+  })
 
-  const targetPlayerOldHand = gameState[playerID].hand;
-  const cardsRemoved = targetPlayerOldHand.slice(startIndex, endIndex);
-  const targetPlayerNewHand = targetPlayerOldHand.splice(startIndex, cardsRemoved.size);
-
-  const newGameState = gameState
-    .set("currentShow", cardsRemoved)
-    .setIn([playerID, "hand"], targetPlayerNewHand)
-
-  return newGameState
+  return newGameState;
 }
