@@ -3,7 +3,7 @@ import { Card } from "./types"
 
 const isSet = (cards: Card[]): boolean => {
   const firstTopNumber = cards[0].top;
-  const isSameTopNumber = (card: Card) => card.top == firstTopNumber;
+  const isSameTopNumber = (card: Card) => card.top === firstTopNumber;
 
   return cards.length > 1 &&cards.every(isSameTopNumber);
 }
@@ -25,5 +25,5 @@ export const isValidShow = (cards: Card[]):boolean => {
   const notEmpty = cards.length >= 1
 
   return notEmpty &&
-    (cards.length == 1 || isSet(cards) || isAscending(cards) || isDescending(cards))
+    (cards.length === 1 || isSet(cards) || isAscending(cards) || isDescending(cards))
 }
