@@ -5,7 +5,7 @@ const isSet = (cards: Card[]): boolean => {
   const firstTopNumber = cards[0].top;
   const isSameTopNumber = (card: Card) => card.top == firstTopNumber;
 
-  return cards.every(isSameTopNumber);
+  return cards.length > 1 &&cards.every(isSameTopNumber);
 }
 
 const isAscending = (cards: Card[]): boolean => {
@@ -22,9 +22,8 @@ const isDescending = (cards: Card[]): boolean => {
 }
 
 export const isValidShow = (cards: Card[]):boolean => {
-  if (cards.length == 1 || isSet(cards) || isAscending(cards) || isDescending(cards)) {
-    return true;
-  } else {
-    return false
-  }
+  const notEmpty = cards.length >= 1
+
+  return notEmpty &&
+    (cards.length == 1 || isSet(cards) || isAscending(cards) || isDescending(cards))
 }
